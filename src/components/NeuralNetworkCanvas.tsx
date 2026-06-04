@@ -361,13 +361,17 @@ export const NeuralNetworkCanvas: React.FC = () => {
     let targetScrollProgress = 0;
     let currentScrollProgress = 0;
 
-    const handleScroll = () => {
-      const scrollTop = window.scrollY;
+    const handleScroll = (e?: Event) => {
+      let scrollTop = window.scrollY;
+      if (e && (e as CustomEvent).detail && typeof (e as CustomEvent).detail.scrollY === 'number') {
+        scrollTop = (e as CustomEvent).detail.scrollY;
+      }
       const threshold = 650; // Distance over which the zoom occurs
       targetScrollProgress = Math.min(Math.max(scrollTop / threshold, 0), 1.5);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('smoothscroll', handleScroll, { passive: true });
 
     // GSAP scale emergence on mount (starts subtle and expands)
     const emergence = { scale: 0.6 };
@@ -537,6 +541,7 @@ export const NeuralNetworkCanvas: React.FC = () => {
       observer.disconnect();
       scaleTween.kill();
       window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('smoothscroll', handleScroll);
       container.removeEventListener('pointerdown', handlePointerDown);
       container.removeEventListener('pointermove', handlePointerMove);
       container.removeEventListener('pointerup', handlePointerUp);

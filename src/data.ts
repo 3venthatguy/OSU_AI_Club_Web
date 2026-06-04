@@ -1,5 +1,18 @@
 import { Officer, ClubEvent, ProjectItem } from './types';
 
+export const MEETING_LOCATION = "Enarson 258";
+export const MEETING_DAY = "Wednesdays";
+export const MEETING_TIME = "7:00 PM";
+export const MEETING_SCHEDULE = `${MEETING_DAY} ${MEETING_TIME}`;
+
+export const HACKAI_NAME = "HACKAI 2027";
+export const HACKAI_DATE_BADGE = "FEB 20–21, 2027";
+export const HACKAI_DATE_FULL = "Feb 20–21, 2027";
+export const HACKAI_LOCATION_BADGE = "FONTANA LAB";
+export const HACKAI_LOCATION_FULL = "Fontana Lab";
+export const HACKAI_DATE_SHORT = "FEB 20–21";
+export const HACKAI_BANNER_BADGE = `✦ ${HACKAI_DATE_BADGE} — ${HACKAI_LOCATION_BADGE}`;
+
 export const OFFICERS: Officer[] = [
   {
     id: 'anirudh-chinthagunta',
@@ -96,11 +109,11 @@ export const EVENTS: ClubEvent[] = [
     category: 'Workshop',
     title: 'Intro to PyTorch & Neural Networks',
     description: 'Learn the fundamentals of deep learning libraries. We will build, train, and test our first simple multi-layer perceptron from scratch.',
-    dateString: 'Oct 8, 2026',
-    day: '08',
+    dateString: 'Oct 6, 2026',
+    day: '06',
     month: 'OCT',
-    time: '6:00 PM',
-    location: 'Dreese Lab 260',
+    time: MEETING_TIME,
+    location: MEETING_LOCATION,
     rsvpUrl: 'https://example.com/rsvp-pytorch',
     isPast: false
   },
@@ -109,11 +122,11 @@ export const EVENTS: ClubEvent[] = [
     category: 'Speaker',
     title: 'AI Industry Night: Google Researchers',
     description: 'Join us for a fireside chat with ML research engineers from Google DeepMind and Google Cloud to discuss agentic setups and TPU computing.',
-    dateString: 'Oct 15, 2026',
-    day: '15',
+    dateString: 'Oct 13, 2026',
+    day: '13',
     month: 'OCT',
-    time: '6:30 PM',
-    location: 'Dreese Lab Auditorium',
+    time: MEETING_TIME,
+    location: MEETING_LOCATION,
     rsvpUrl: 'https://example.com/rsvp-google',
     isPast: false
   },
@@ -122,11 +135,11 @@ export const EVENTS: ClubEvent[] = [
     category: 'HackAI',
     title: 'HackAI 2026 Registration Kickoff',
     description: 'Learn everything about the HackAI prompt challenges, developer themes, and $12K team prizes. Grab early tickets and find team partners!',
-    dateString: 'Nov 2, 2026',
-    day: '02',
+    dateString: 'Nov 3, 2026',
+    day: '03',
     month: 'NOV',
-    time: '5:30 PM',
-    location: 'Dreese Lab 260',
+    time: MEETING_TIME,
+    location: MEETING_LOCATION,
     rsvpUrl: 'https://example.com/rsvp-hackai-registration',
     isPast: false
   },
@@ -135,11 +148,11 @@ export const EVENTS: ClubEvent[] = [
     category: 'Workshop',
     title: 'Fine-Tuning LLMs on Custom Data',
     description: 'Practical guide to LoRA, QLoRA, and parameter-efficient fine-tuning (PEFT). Bring your laptop for a step-by-step Google Colab walk.',
-    dateString: 'Nov 12, 2026',
-    day: '12',
+    dateString: 'Nov 10, 2026',
+    day: '10',
     month: 'NOV',
-    time: '6:00 PM',
-    location: 'Dreese Lab 260',
+    time: MEETING_TIME,
+    location: MEETING_LOCATION,
     rsvpUrl: 'https://example.com/rsvp-llmtuning',
     isPast: false
   },
@@ -148,11 +161,11 @@ export const EVENTS: ClubEvent[] = [
     category: 'Social',
     title: 'End of Semester Mixer & Showcase',
     description: 'Hang out, eat free pizza, talk shop, and watch live demonstrations of the project team prototypes developed during this academic period.',
-    dateString: 'Dec 4, 2026',
-    day: '04',
+    dateString: 'Dec 1, 2026',
+    day: '01',
     month: 'DEC',
-    time: '7:00 PM',
-    location: 'Hitchcock Hall Lobby',
+    time: MEETING_TIME,
+    location: MEETING_LOCATION,
     rsvpUrl: 'https://example.com/rsvp-mixer',
     isPast: false
   },
@@ -176,11 +189,11 @@ export const EVENTS: ClubEvent[] = [
     category: 'Workshop',
     title: 'MLOps: Deploying Models to Cloud Run',
     description: 'How to containerize PyTorch runtimes with Docker and deploy them onto scalable serverless clusters with automatic API scaling.',
-    dateString: 'Mar 12, 2025',
-    day: '12',
+    dateString: 'Mar 11, 2025',
+    day: '11',
     month: 'MAR',
-    time: '6:30 PM',
-    location: 'Dreese Lab 260',
+    time: MEETING_TIME,
+    location: MEETING_LOCATION,
     rsvpUrl: '#',
     recapUrl: 'https://example.com/recap-mlops',
     isPast: true
@@ -190,11 +203,11 @@ export const EVENTS: ClubEvent[] = [
     category: 'Workshop',
     title: 'Reinforcement Learning in Gamified Environments',
     description: 'Deep diving into Q-learning and Policy Gradient methods as applied to simulated Atari and custom Gym visual playgrounds.',
-    dateString: 'Apr 2, 2025',
-    day: '02',
+    dateString: 'Apr 1, 2025',
+    day: '01',
     month: 'APR',
-    time: '6:00 PM',
-    location: 'Dreese Lab 260',
+    time: MEETING_TIME,
+    location: MEETING_LOCATION,
     rsvpUrl: '#',
     recapUrl: 'https://example.com/recap-rl',
     isPast: true
@@ -209,7 +222,8 @@ export const PROJECTS: ProjectItem[] = [
     description: 'A customized, retrieval-augmented generation (RAG) assistant indexing Ohio State course schedules, building layout directories, and advising options.',
     tags: ['LLM', 'RAG', 'VectorDB', 'TypeScript'],
     stats: '500+ Daily Searches',
-    image: 'https://images.unsplash.com/photo-1531746790731-6c087fecd50a?q=80&w=600&auto=format&fit=crop'
+    image: 'https://images.unsplash.com/photo-1531746790731-6c087fecd50a?q=80&w=600&auto=format&fit=crop',
+    applyUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSd3Aj_10MRloCjjvdpF_HnvoOI8poBr6LveJTUvKTZkrhiDuA/viewform?usp=header'
   },
   {
     id: 'traffic-analysis',
@@ -218,7 +232,8 @@ export const PROJECTS: ProjectItem[] = [
     description: 'An edge-deployed real-time neural analyzer assessing vehicle counts, safety bottlenecks, and pedestrian lanes around Lane Avenue.',
     tags: ['PyTorch', 'YOLOnas', 'OpenCV', 'Docker'],
     stats: '94.2% Real-time Precision',
-    image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=600&auto=format&fit=crop'
+    image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=600&auto=format&fit=crop',
+    applyUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSd3Aj_10MRloCjjvdpF_HnvoOI8poBr6LveJTUvKTZkrhiDuA/viewform?usp=header'
   },
   {
     id: 'rl-quadcopter',
@@ -227,7 +242,8 @@ export const PROJECTS: ProjectItem[] = [
     description: 'Developing reinforcement learning guidance equations in Pybullet to achieve high-tolerance flight resilience under severe sudden wind gusts.',
     tags: ['Reinforcement Learning', 'PyBullet', 'JAX'],
     stats: '2.4x Recovery Stabilization',
-    image: 'https://images.unsplash.com/photo-1527977966376-1c8408f9f108?q=80&w=600&auto=format&fit=crop'
+    image: 'https://images.unsplash.com/photo-1527977966376-1c8408f9f108?q=80&w=600&auto=format&fit=crop',
+    applyUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSd3Aj_10MRloCjjvdpF_HnvoOI8poBr6LveJTUvKTZkrhiDuA/viewform?usp=header'
   },
   {
     id: 'bio-dna',
@@ -236,7 +252,8 @@ export const PROJECTS: ProjectItem[] = [
     description: 'Applying generative sequence models to inspect micro-evolution patterns and classify transcription binding spots with state-of-the-art accuracy.',
     tags: ['DNA-seq', 'Keras', 'Transformers', 'BioPython'],
     stats: 'SOTA Validation Bounds',
-    image: 'https://images.unsplash.com/photo-1507413245164-6160d8298b31?q=80&w=600&auto=format&fit=crop'
+    image: 'https://images.unsplash.com/photo-1507413245164-6160d8298b31?q=80&w=600&auto=format&fit=crop',
+    applyUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSd3Aj_10MRloCjjvdpF_HnvoOI8poBr6LveJTUvKTZkrhiDuA/viewform?usp=header'
   }
 ];
 
@@ -255,10 +272,46 @@ export const FAQS = [
   },
   {
     q: "How do I join a semester project team?",
-    a: "Project teams form at the start of each semester (typically by week 2). Attend the Projects Kickoff, hear project pitches from team leads, or pitch your own idea, and sign up directly."
+    a: "Project teams form throughout the semester. Attend the Projects Kickoff, hear project pitches from team leads, or pitch your own idea, and sign up directly."
   },
   {
     q: "How can I participate in HackAI?",
     a: "HackAI is open to all university students. Registration typically opens 2 months before the event (Feb/March). Check out our `/hackai` page for up-to-the-minute updates and prize structures."
   }
 ];
+
+export const HACKAI_FAQS = [
+  {
+    q: "Who is eligible to participate in HackAI?",
+    a: "All currently enrolled undergraduate, graduate, and PhD university students (including students from Ohio State and other institutions) are welcome. No prior experience or club admission is required. Any degree branch or background can join!"
+  },
+    {
+    q: "Does registrations or attendance cost anything?",
+    a: "Absolutely not! HackAI is 100% free for all admitted hackers. We provide complete catered meals, beverages, snacks, official event shirts, specialized computing credits, and premium swag throughout the weekend."
+  },
+  {
+    q: "What is the team size limit?",
+    a: "You can collaborate in teams of 1 to 4 individuals. We will host a dedicated team-formation channel on Discord and a live matchmaking session right after the opening ceremony if you need to find partners."
+  },
+    {
+    q: "What if I don't have a team?",
+    a: `At the end of our weekly ${MEETING_TIME} ${MEETING_DAY} meetings at ${MEETING_LOCATION} we will have a team formation session for anyone looking for teammates. You can also ask around in the Artificial Intelligence Club Discord or ${HACKAI_NAME} Discord.`
+  },
+  {
+    q: "Can I participate virtually?",
+    a: "Yes! We are using Discord as our online platform. You will be able to work with your team, connect with mentors and get judged through Discord. All events will be hybrid and Zoom links will be posted in the Discord."
+  },
+  {
+    q: "What should I bring to the hackathon?",
+    a: "Bring your laptop, power adapter/chargers, any hardware accessories/devices you want to develop on, and your BuckID/student identification card. Sleeping bags, eye masks, and earplugs are recommended if you plan to nap at the venue. Meals will be provided."
+  },
+  {
+    q: "Are beginner-friendly tutorials or workshops provided?",
+    a: "Yes! We run specialized intro workshops, cloud deployment tutorials, and API starter guides early in the weekend. Plus, we have professional industry mentors and graduate teaching assistants on-site to assist with debugging."
+  },
+  {
+    q: "How is submission judging structured?",
+    a: "Projects are exhibited in a high-energy, interactive science-fair demo layout. Teams pitch their software live to judges from experts, research sponsors, and faculty members who grade based on creativity, technical capability, and product design."
+  }
+];
+

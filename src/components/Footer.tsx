@@ -1,24 +1,16 @@
-import React, { useState } from 'react';
-import { Mail, MessageSquare, ExternalLink, Instagram, Linkedin, Send } from 'lucide-react';
+import React from 'react';
+import { Mail, MessageSquare, ExternalLink, Instagram, Linkedin } from 'lucide-react';
 // @ts-ignore
 import aiLogo from '../../assets/.aistudio/images/AI_Logo_Final.png';
+import {
+  HACKAI_NAME,
+} from '../data';
 
 interface FooterProps {
   onNavigate: (page: string) => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
-  const [email, setEmail] = useState('');
-  const [subscribed, setSubscribed] = useState(false);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email) {
-      setSubscribed(true);
-      setEmail('');
-    }
-  };
-
   return (
     <footer
       id="footer-contact"
@@ -47,35 +39,18 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             The official student-led engineering & research incubator for Artificial Intelligence and Machine Learning at The Ohio State University, Dreese Laboratories.
           </p>
 
-          {/* Inline Newsletter Entry */}
+          {/* Subscribe to our Newsletter Button */}
           <div className="w-full max-w-sm">
-            <span className="font-sans text-[11px] font-bold text-text-primary uppercase tracking-widest block mb-3">
-              Stay in the Loop
-            </span>
-            {subscribed ? (
-              <div id="footer-subscribed-toast" className="p-3 bg-accent-secondary/10 border border-accent-secondary/20 rounded-xl text-accent-secondary text-xs font-semibold flex items-center space-x-2 animate-fade-in">
-                <span>✓ Thank you! You've been subscribed to weekly digests.</span>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="relative flex items-center w-full">
-                <input
-                  type="email"
-                  required
-                  placeholder="osuaiclub@gmail.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full h-11 bg-bg-elevated border border-border-medium rounded-full pl-5 pr-12 text-sm text-text-primary font-sans focus:outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary transition-all"
-                />
-                <button
-                  type="submit"
-                  id="footer-email-submit"
-                  className="absolute right-1 w-9 h-9 rounded-full bg-accent-primary hover:bg-accent-primary-hover flex items-center justify-center text-white cursor-pointer transition-all hover:scale-[1.04]"
-                  aria-label="Subscribe"
-                >
-                  <Send className="w-3.5 h-3.5" />
-                </button>
-              </form>
-            )}
+            <a
+              id="footer-newsletter-button"
+              href="https://go.osu.edu/aiclub"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center justify-center h-11 px-6 bg-accent-primary hover:bg-accent-primary-hover text-white font-sans text-xs font-bold rounded-full shadow-[0_4px_14px_rgba(59,91,255,0.2)] hover:shadow-[0_6px_20px_rgba(59,91,255,0.3)] transform hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+            >
+              <span>Subscribe to our Newsletter</span>
+              <span className="ml-2 font-mono">→</span>
+            </a>
           </div>
         </div>
 
@@ -88,7 +63,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             {[
               { label: 'Campus Homepage', id: 'home' },
               { label: 'Our Story & Officers', id: 'about' },
-              { label: 'HackAI 2026', id: 'hackai' },
+              { label: `${HACKAI_NAME}`, id: 'hackai' },
               { label: 'Events Calendar', id: 'events' },
             ].map((link) => (
               <button
@@ -122,7 +97,13 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
               className="flex items-center space-x-3 text-text-secondary hover:text-accent-primary transition-colors group"
             >
               <div className="w-9 h-9 rounded-xl bg-bg-secondary group-hover:bg-accent-primary-dim flex items-center justify-center transition-colors">
-                <MessageSquare className="w-4 h-4 text-accent-primary" />
+                <svg
+                  className="w-4 h-4 text-accent-primary fill-current"
+                  viewBox="0 0 127.14 96.36"
+                  role="img"
+                >
+                  <path d="M107.7,8.07A105.15,105.15,0,0,0,77.26,0a77.19,77.19,0,0,0-3.3,6.83A96.67,96.67,0,0,0,52.8,6.83,77.19,77.19,0,0,0,49.5,0,105.15,105.15,0,0,0,19.06,8.07C2.75,32.4-1.69,56.12.51,79.46a105.52,105.52,0,0,0,31.7,16.09,77.11,77.11,0,0,0,6.67-10.87,68.7,68.7,0,0,1-10.51-5c.89-.66,1.76-1.37,2.58-2.1a75.46,75.46,0,0,0,65.07,0c.83.73,1.69,1.44,2.58,2.1a68.7,68.7,0,0,1-10.51,5,77.11,77.11,0,0,0,6.67,10.87,105.52,105.52,0,0,0,31.7-16.09C128.84,50.77,124.08,27.24,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53S36.18,40.36,42.45,40.36,53.83,46,53.83,53,48.72,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.24,60,73.24,53S78.41,40.36,84.69,40.36,96.07,46,96.07,53,91,65.69,84.69,65.69Z" />
+                </svg>
               </div>
               <div className="flex flex-col">
                 <span className="font-sans font-bold text-text-primary group-hover:text-accent-primary">Discord Server</span>
@@ -165,15 +146,19 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
             </a>
 
             {/* Email */}
-            <div className="flex items-center space-x-3 text-text-secondary">
-              <div className="w-9 h-9 rounded-xl bg-bg-secondary flex items-center justify-center">
-                <Mail className="w-4 h-4 text-text-muted" />
+            <a
+              id="footer-email-link"
+              href="mailto:osuaiclub@gmail.com"
+              className="flex items-center space-x-3 text-text-secondary hover:text-accent-primary transition-colors group"
+            >
+              <div className="w-9 h-9 rounded-xl bg-bg-secondary group-hover:bg-accent-primary-dim flex items-center justify-center transition-colors">
+                <Mail className="w-4 h-4 text-accent-primary" />
               </div>
               <div className="flex flex-col">
-                <span className="font-sans font-bold text-text-primary">Contact Officers</span>
+                <span className="font-sans font-bold text-text-primary group-hover:text-accent-primary">Contact Officers</span>
                 <span className="text-xs text-text-muted">osuaiclub@gmail.com</span>
               </div>
-            </div>
+            </a>
 
           </div>
         </div>

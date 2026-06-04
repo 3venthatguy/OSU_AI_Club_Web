@@ -39,4 +39,5 @@ export interface ProjectItem {
   tags: string[];
   stats: string;
   image: string;
+  applyUrl?: string;
 }

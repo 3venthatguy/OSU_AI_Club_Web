@@ -22,23 +22,57 @@ export const WhatWeDo: React.FC<WhatWeDoProps> = ({ onNavigate }) => {
   const trackRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
+    const handleScroll = (e?: Event) => {
       if (!sectionRef.current) return;
+      
+      // Exit early for mobile/tablet screens to prevent scroll-jacking style translations
+      if (window.innerWidth < 1024) {
+        const stickyElement = sectionRef.current.querySelector('.sticky-layout-box') as HTMLElement;
+        if (stickyElement) {
+          stickyElement.style.transform = '';
+        }
+        return;
+      }
+
+      // Calculate total page offset of the section within the scroll content container
+      let sectionTopY = 0;
+      let el: HTMLElement | null = sectionRef.current;
+      while (el && el.id !== 'smooth-scroll-content' && el !== document.body) {
+        sectionTopY += el.offsetTop;
+        el = el.offsetParent as HTMLElement | null;
+      }
+
+      // Check if smoothscroll event provided scrollY, otherwise fall back to window.scrollY
+      let sY = window.scrollY;
+      if (e && (e as CustomEvent).detail && typeof (e as CustomEvent).detail.scrollY === 'number') {
+        sY = (e as CustomEvent).detail.scrollY;
+      }
+
       const rect = sectionRef.current.getBoundingClientRect();
-      const scrollTop = -rect.top;
-      // Scrollable distance is section height minus current visual window height
+      const scrollTop = sY - sectionTopY;
       const scrollHeight = rect.height - window.innerHeight;
       
       if (scrollHeight > 0) {
         const progress = Math.min(1, Math.max(0, scrollTop / scrollHeight));
         setScrollProgress(progress);
+        
+        // Compute manual translation to keep the box sticky in the transformed container
+        const translation = Math.min(scrollHeight, Math.max(0, scrollTop));
+        const stickyElement = sectionRef.current.querySelector('.sticky-layout-box') as HTMLElement;
+        if (stickyElement) {
+          stickyElement.style.transform = `translate3d(0px, ${translation}px, 0px)`;
+        }
       }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('smoothscroll', handleScroll, { passive: true });
     handleScroll();
 
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('smoothscroll', handleScroll);
+    };
   }, []);
 
   const panels: Panel[] = [
@@ -208,15 +242,14 @@ export const WhatWeDo: React.FC<WhatWeDoProps> = ({ onNavigate }) => {
     <section
       ref={sectionRef}
       id="philosophy-horizontal-interactive-section"
-      className="relative w-full h-[400vh] lg:h-[450vh] bg-bg-primary overflow-visible"
+      className="relative w-full h-auto lg:h-[450vh] bg-bg-primary overflow-visible"
     >
-      {/* Pinned Sticky Layout Box */}
-      <div className="sticky top-0 left-0 w-full h-screen overflow-hidden flex flex-col justify-center bg-bg-primary border-b border-border-subtle z-10 py-8 md:py-16">
-
-        <div className="max-w-7xl mx-auto px-6 md:px-16 w-full relative z-20 flex flex-col lg:flex-row lg:items-center lg:gap-16">
+      {/* 1. DESKTOP INTERACTIVE STICKY LAYOUT (Hidden below lg) */}
+      <div className="sticky-layout-box hidden lg:flex sticky top-0 left-0 w-full h-screen overflow-hidden flex-col justify-center bg-bg-primary border-b border-border-subtle z-10 py-16">
+        <div className="max-w-7xl mx-auto px-6 md:px-16 w-full relative z-20 flex flex-row items-center gap-16">
           
           {/* Left Column - Large Interactive Scroll Timeline side-by-side */}
-          <div className="hidden lg:flex flex-col items-center justify-center w-[120px] h-[74vh] shrink-0 relative">
+          <div className="flex flex-col items-center justify-center w-[120px] h-[74vh] shrink-0 relative">
             <ScrollDrawSVG 
               progress={scrollProgress} 
               onNodeClick={handleDotClick} 
@@ -228,15 +261,15 @@ export const WhatWeDo: React.FC<WhatWeDoProps> = ({ onNavigate }) => {
           <div className="flex-1 w-full min-w-0">
           
             {/* Section Header */}
-            <div id="panels-header-bar" className="flex flex-col md:flex-row md:items-end justify-between mb-8 md:mb-12">
+            <div id="panels-header-bar" className="flex flex-row items-end justify-between mb-12">
               <div>
-                <h2 className="font-display text-[32px] md:text-[48px] font-extrabold text-[#0E1B2E] dark:text-text-primary tracking-tight">
+                <h2 className="font-display text-[48px] font-extrabold text-[#0E1B2E] dark:text-text-primary tracking-tight">
                   What We Do
                 </h2>
               </div>
 
-              {/* Interactive slide controllers (smoothly triggers scroll to target point) */}
-              <div className="flex items-center space-x-3 mt-4 md:mt-0">
+              {/* Interactive slide controllers */}
+              <div className="flex items-center space-x-3">
                 <button
                   id="philosophies-prev-arrow"
                   onClick={handlePrev}
@@ -259,12 +292,10 @@ export const WhatWeDo: React.FC<WhatWeDoProps> = ({ onNavigate }) => {
               </div>
             </div>
 
-
-
             {/* Carousel slide container */}
             <div
               ref={trackRef}
-              className="relative min-h-[380px] md:min-h-[420px] rounded-2xl overflow-hidden transition-all duration-500 shadow-card"
+              className="relative min-h-[420px] rounded-2xl overflow-hidden transition-all duration-500 shadow-card"
             >
               {panels.map((panel, idx) => {
                 const isActive = idx === activeIndex;
@@ -274,7 +305,7 @@ export const WhatWeDo: React.FC<WhatWeDoProps> = ({ onNavigate }) => {
                   <div
                     key={panel.id}
                     id={`philosophy-grid-panel-${panel.id}`}
-                    className={`absolute inset-0 w-full h-full p-8 md:p-14 flex flex-col md:flex-row items-center md:justify-between transition-all duration-500 ${panel.bgClass} ${
+                    className={`absolute inset-0 w-full h-full p-14 flex flex-row items-center justify-between transition-all duration-500 ${panel.bgClass} ${
                       isActive
                         ? 'opacity-100 translate-x-0 scale-100 z-10'
                         : 'opacity-0 translate-x-12 scale-95 pointer-events-none z-0'
@@ -282,13 +313,13 @@ export const WhatWeDo: React.FC<WhatWeDoProps> = ({ onNavigate }) => {
                   >
                     {/* Large Background watermarked index number */}
                     {!isDarkCTA && (
-                      <div className="absolute top-2 right-4 font-mono text-[96px] md:text-[144px] font-extrabold text-[#3B5BFF]/[0.03] select-none pointer-events-none z-0 leading-none">
+                      <div className="absolute top-2 right-4 font-mono text-[144px] font-extrabold text-[#3B5BFF]/[0.03] select-none pointer-events-none z-0 leading-none">
                         {panel.num}
                       </div>
                     )}
 
                     {/* Left informational block */}
-                    <div className="flex-1 max-w-xl pr-0 md:pr-8 z-10">
+                    <div className="flex-1 max-w-xl pr-8 z-10">
                       <span
                         className={`inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider mb-5 ${
                           isDarkCTA
@@ -300,7 +331,7 @@ export const WhatWeDo: React.FC<WhatWeDoProps> = ({ onNavigate }) => {
                       </span>
                       
                       <h3
-                        className={`font-display text-[26px] md:text-[38px] font-extrabold leading-[1.15] tracking-tight mb-4 ${
+                        className={`font-display text-[38px] font-extrabold leading-[1.15] tracking-tight mb-4 ${
                           isDarkCTA ? 'text-white' : 'text-text-primary'
                         }`}
                       >
@@ -308,7 +339,7 @@ export const WhatWeDo: React.FC<WhatWeDoProps> = ({ onNavigate }) => {
                       </h3>
 
                       <p
-                        className={`font-sans text-[14px] md:text-[16px] leading-[1.7] mb-6 ${
+                        className={`font-sans text-[16px] leading-[1.7] mb-6 ${
                           isDarkCTA ? 'text-[#8A9AB4]' : 'text-text-secondary'
                         }`}
                       >
@@ -317,7 +348,7 @@ export const WhatWeDo: React.FC<WhatWeDoProps> = ({ onNavigate }) => {
                     </div>
 
                     {/* Right Interactive/Static Graphic Component */}
-                    <div className="flex-shrink-0 w-full md:w-auto mt-6 md:mt-0 flex justify-center z-10">
+                    <div className="flex-shrink-0 w-auto flex justify-center z-10">
                       {panel.icon}
                     </div>
                   </div>
@@ -342,6 +373,70 @@ export const WhatWeDo: React.FC<WhatWeDoProps> = ({ onNavigate }) => {
               ))}
             </div>
 
+          </div>
+        </div>
+      </div>
+
+      {/* 2. MOBILE & TABLET LAYOUT (Visible only < lg; flow naturally without scroll-jacking, sticky height constraints, or absolute cutoffs) */}
+      <div className="block lg:hidden w-full h-auto bg-bg-primary border-b border-border-subtle py-16 px-6 relative z-10">
+        <div className="max-w-xl mx-auto">
+          <div id="panels-mobile-header" className="mb-10 text-center">
+            <span className="font-sans text-[11px] font-bold text-accent-secondary uppercase tracking-[0.16em] px-3 py-1 bg-accent-secondary/10 rounded-full">
+              Core Identity
+            </span>
+            <h2 className="font-display text-3xl md:text-4xl font-extrabold text-[#0E1B2E] dark:text-text-primary mt-3.5 tracking-tight">
+              What We Do
+            </h2>
+            <p className="font-sans text-[14px] text-text-secondary mt-3 max-w-sm mx-auto leading-relaxed">
+              Cultivating key strengths in machine learning first-principles, active system deployments, and national collegiate challenges.
+            </p>
+          </div>
+
+          <div id="panels-mobile-list" className="space-y-6">
+            {panels.map((panel) => {
+              const isDarkCTA = panel.id === 'cta';
+              return (
+                <div
+                  key={panel.id}
+                  id={`philosophy-mobile-card-${panel.id}`}
+                  className={`rounded-2xl border border-border-subtle p-6 md:p-8 flex flex-col justify-between relative overflow-hidden transition-all duration-300 shadow-sm ${
+                    isDarkCTA 
+                      ? 'bg-gradient-to-br from-[#04080F] via-[#08152A] to-[#011C10] border-accent-secondary/30 text-white' 
+                      : 'bg-bg-elevated text-text-primary'
+                  }`}
+                >
+                  {/* Watermarked index badge */}
+                  {!isDarkCTA && (
+                    <div className="absolute top-2 right-4 font-mono text-7xl font-extrabold text-[#3B5BFF]/[0.05] select-none pointer-events-none z-0">
+                      {panel.num}
+                    </div>
+                  )}
+
+                  <div className="z-10 flex-grow text-left">
+                    <span
+                      className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider mb-4 ${
+                        isDarkCTA
+                          ? 'bg-accent-secondary/20 text-accent-secondary'
+                          : 'bg-accent-primary-dim text-accent-primary'
+                      }`}
+                    >
+                      {panel.tag}
+                    </span>
+                    <h3 className={`font-display text-xl font-extrabold leading-tight mb-2.5 ${isDarkCTA ? 'text-white' : 'text-text-primary'}`}>
+                      {panel.title}
+                    </h3>
+                    <p className={`font-sans text-[13.5px] leading-relaxed mb-6 ${isDarkCTA ? 'text-[#8A9AB4]' : 'text-text-secondary'}`}>
+                      {panel.body}
+                    </p>
+                  </div>
+
+                  {/* High fidelity dynamic graphic element */}
+                  <div className="z-10 mt-2 flex justify-center w-full">
+                    {panel.icon}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

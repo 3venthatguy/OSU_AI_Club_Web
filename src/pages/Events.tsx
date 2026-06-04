@@ -3,6 +3,11 @@ import { EVENTS } from '../data';
 import { ClubEvent } from '../types';
 import { Calendar, MapPin, Clock, ArrowRight, Sparkles, CheckCircle } from 'lucide-react';
 import { TextScramble } from '../components/TextScramble';
+import {
+  MEETING_LOCATION,
+  MEETING_DAY,
+  MEETING_TIME
+} from '../data';
 
 export const Events: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<string>('All');
@@ -50,8 +55,17 @@ export const Events: React.FC = () => {
           <h1 className="font-display text-[44px] md:text-[64px] font-extrabold text-text-primary leading-none tracking-tight mb-5 animate-fade-in">
             <TextScramble id="events-title-scramble" text="Club Events" />
           </h1>
-          <p className="font-sans text-[15px] md:text-[17px] text-text-secondary leading-relaxed max-w-xl mb-12">
+          <p className="font-sans text-[15px] md:text-[17px] text-text-secondary leading-relaxed max-w-xl mb-8">
             Workshops, speaker sessions, regional hackathons, and social mixers — explore our academic calendar and rsvp below.
+          </p>
+
+          {/* Weekly Meetings Highlight Text */}
+          <p className="font-sans text-[13.5px] text-text-secondary flex items-center justify-center gap-1.5 flex-wrap mb-12 select-none">
+            <Clock className="w-4 h-4 text-accent-primary shrink-0" />
+            <span>General Meetings every</span>
+            <span className="font-bold text-text-primary whitespace-nowrap">{MEETING_DAY} at {MEETING_TIME}</span>
+            <span>in</span>
+            <span className="font-semibold text-text-primary whitespace-nowrap">{MEETING_LOCATION}</span>
           </p>
 
           {/* Filter Row */}

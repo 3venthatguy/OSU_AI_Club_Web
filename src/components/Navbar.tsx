@@ -13,8 +13,12 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 60) {
+    const handleScroll = (e?: Event) => {
+      let scrollY = window.scrollY;
+      if (e && (e as CustomEvent).detail && typeof (e as CustomEvent).detail.scrollY === 'number') {
+        scrollY = (e as CustomEvent).detail.scrollY;
+      }
+      if (scrollY > 60) {
         setScrolled(true);
       } else {
         setScrolled(false);
@@ -22,7 +26,11 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate }) => {
     };
 
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('smoothscroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('smoothscroll', handleScroll);
+    };
   }, []);
 
   const navItems = [
@@ -48,7 +56,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate }) => {
       <nav
         id="main-navigation-header"
         className={`fixed top-0 left-0 right-0 w-full z-50 h-[72px] transition-all duration-350 flex items-center ${
-          scrolled
+          scrolled || activePage !== 'home'
             ? 'bg-[rgba(238,242,249,0.82)] backdrop-blur-xl border-b border-border-subtle shadow-[0_1px_12px_rgba(14,27,46,0.04)]'
             : 'bg-transparent'
         }`}
@@ -96,7 +104,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate }) => {
           <div className="hidden md:block">
             <button
               id="nav-join-cta-button"
-              onClick={() => handleNavClick('hackai')}
+              onClick={() => onNavigate('events')}
               className="h-[38px] px-5 bg-accent-primary hover:bg-accent-primary-hover text-white font-sans text-[14px] font-semibold rounded-full flex items-center space-x-1.5 shadow-[0_4px_14px_rgba(59,91,255,0.25)] hover:shadow-[0_6px_20px_rgba(59,91,255,0.35)] transform hover:scale-[1.03] transition-all duration-200 cursor-pointer"
             >
               <span>Join the Club</span>
@@ -138,7 +146,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate }) => {
 
             <button
               id="mobile-nav-join-button"
-              onClick={() => handleNavClick('hackai')}
+              onClick={() => handleNavClick('events')}
               className="w-full h-12 bg-accent-primary text-white font-sans font-semibold rounded-full flex items-center justify-center space-x-2 shadow-md"
             >
               <span>Join the Club</span>

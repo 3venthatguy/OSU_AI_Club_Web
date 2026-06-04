@@ -1,5 +1,11 @@
 import React from 'react';
 import { Calendar, MapPin, ArrowRight } from 'lucide-react';
+import {
+  HACKAI_NAME,
+  HACKAI_DATE_FULL,
+  HACKAI_LOCATION_FULL,
+  HACKAI_DATE_SHORT
+} from '../data';
 
 interface HackAITeaserProps {
   onNavigate: (page: string) => void;
@@ -40,7 +46,7 @@ export const HackAITeaser: React.FC<HackAITeaserProps> = ({ onNavigate }) => {
               </span>
               
               <h3 className="font-display text-[44px] md:text-[68px] font-extrabold text-white leading-none tracking-tighter mb-4">
-                HACKAI 2026
+                {HACKAI_NAME}
               </h3>
               
               <p className="font-sans text-[15px] md:text-[17px] text-[#8A9AB4] leading-relaxed max-w-lg mb-8">
@@ -65,11 +71,11 @@ export const HackAITeaser: React.FC<HackAITeaserProps> = ({ onNavigate }) => {
               <div className="flex items-center space-x-5 text-[13px] md:text-[14px] text-white/70 font-mono">
                 <div className="flex items-center space-x-2">
                   <Calendar className="w-4 h-4 text-accent-secondary" />
-                  <span>Feb 20–22, 2026</span>
+                  <span>{HACKAI_DATE_FULL}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <MapPin className="w-4 h-4 text-accent-secondary" />
-                  <span>Ohio Union Ballroom</span>
+                  <span>{HACKAI_LOCATION_FULL}</span>
                 </div>
               </div>
             </div>
@@ -99,7 +105,7 @@ export const HackAITeaser: React.FC<HackAITeaserProps> = ({ onNavigate }) => {
           {/* Infinite Register Marquee ticker ribbon across bottom */}
           <div className="absolute bottom-0 left-0 right-0 h-8 bg-accent-secondary flex items-center overflow-hidden z-10 select-none pointer-events-none">
             <div className="animate-marquee whitespace-nowrap flex text-[10px] md:text-[11px] font-mono font-bold text-black/85">
-              {Array(12).fill('✦ REGISTER NOW FOR HACKAI 2026 ✦ SHAPE THE GENERATIVE FUTURE ✦ FEB 20–22 ✦ ').map((text, i) => (
+              {Array(12).fill(`✦ REGISTER NOW FOR ${HACKAI_NAME} ✦ SHAPE THE GENERATIVE FUTURE ✦ ${HACKAI_DATE_SHORT} ✦ `).map((text, i) => (
                 <span key={i} className="mr-6">{text}</span>
               ))}
             </div>

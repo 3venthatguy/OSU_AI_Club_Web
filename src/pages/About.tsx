@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { OFFICERS } from '../data';
 import { Officer } from '../types';
@@ -15,7 +16,12 @@ export const About: React.FC<AboutProps> = ({ onNavigate }) => {
   const [expandedOfficer, setExpandedOfficer] = useState<Officer | null>(null);
   const [animState, setAnimState] = useState<'idle' | 'starting' | 'active' | 'closing'>('idle');
   const [initialRect, setInitialRect] = useState<DOMRect | null>(null);
+  const [mounted, setMounted] = useState(false);
   const cardsRef = useRef<{ [key: string]: HTMLDivElement | null }>({});
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Escape key to close flipped card & handle body scroll
   useEffect(() => {
@@ -66,6 +72,244 @@ export const About: React.FC<AboutProps> = ({ onNavigate }) => {
     }, 600);
   };
 
+  const renderExpandedOfficer = () => {
+    if (!mounted || !expandedOfficer || !initialRect) return null;
+
+    return createPortal(
+      <>
+        {/* Backdrop for flipped card focus */}
+        <AnimatePresence mode="wait">
+          {animState !== 'idle' && (
+            <motion.div
+              id="officer-flip-backdrop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              onClick={handleClose}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] cursor-pointer"
+            />
+          )}
+        </AnimatePresence>
+
+        {/* Floating Centered Expanded Card */}
+        <div
+          className="card-container is-active"
+          id="officer-card-container-expanded"
+          style={{
+            position: 'fixed',
+            width: animState === 'active' ? 'max(300px, min(500px, 92vw))' : `${initialRect.width}px`,
+            height: animState === 'active' ? '450px' : `${initialRect.height}px`,
+            top: animState === 'active' ? '50%' : `${initialRect.top}px`,
+            left: animState === 'active' ? '50%' : `${initialRect.left}px`,
+            transform: animState === 'active' ? 'translate(-50%, -50%)' : 'translate(0, 0)',
+            transition: animState === 'starting' 
+              ? 'none' 
+              : 'width 600ms cubic-bezier(0.4, 0, 0.2, 1), height 600ms cubic-bezier(0.4, 0, 0.2, 1), top 600ms cubic-bezier(0.4, 0, 0.2, 1), left 600ms cubic-bezier(0.4, 0, 0.2, 1), transform 600ms cubic-bezier(0.4, 0, 0.2, 1)',
+            zIndex: 110,
+            perspective: '1000px',
+            cursor: 'default',
+          }}
+        >
+          <div
+            className="card-inner"
+            style={{
+              position: 'relative',
+              width: '100%',
+              height: '100%',
+              transition: 'transform 600ms cubic-bezier(0.4, 0, 0.2, 1)',
+              transformStyle: 'preserve-3d',
+              transform: animState === 'active' ? 'rotateY(180deg)' : 'rotateY(0deg)',
+            }}
+          >
+            {/* FRONT FACE */}
+            <div
+              className="card-front"
+              style={{
+                position: 'absolute',
+                width: '100%',
+                height: '100%',
+                backfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden',
+                top: 0,
+                left: 0,
+                overflow: 'hidden',
+              }}
+            >
+              <div className="w-full h-full rounded-2xl bg-bg-elevated border border-border-subtle shadow-card flex flex-col justify-between overflow-hidden">
+                {/* Image at Top */}
+                <div className="w-full h-[280px] overflow-hidden relative border-b border-border-subtle/50 bg-bg-secondary flex items-center justify-center shrink-0">
+                  {expandedOfficer.photoUrl ? (
+                    <img
+                      src={expandedOfficer.photoUrl}
+                      alt={expandedOfficer.name}
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-bg-secondary text-accent-primary font-display font-black text-2xl">
+                      {expandedOfficer.initials}
+                    </div>
+                  )}
+                  {/* Academic Year Badge */}
+                  <div className="absolute top-2.5 right-2.5 px-2 py-0.5 bg-black/60 backdrop-blur-md rounded-full text-[8px] font-bold text-accent-secondary tracking-widest uppercase border border-border-subtle/10">
+                    {expandedOfficer.year}
+                  </div>
+                </div>
+
+                {/* Content immediately below */}
+                <div className="p-3 text-left flex-grow flex flex-col justify-between">
+                  <div>
+                    <h3 className="font-sans text-[15px] font-bold text-text-primary leading-tight">
+                      {expandedOfficer.name}
+                    </h3>
+                    <p className="font-sans text-[10px] font-bold uppercase tracking-wider text-accent-secondary mt-0.5">
+                      {expandedOfficer.role}
+                    </p>
+                  </div>
+                  
+                  <div className="border-t border-border-subtle/30 pt-1.5 flex flex-col gap-0.5">
+                    <p className="font-sans text-[10px] text-text-secondary line-clamp-1">
+                      <span className="font-bold text-text-primary">Major: </span>{expandedOfficer.major}
+                    </p>
+                    {expandedOfficer.minor && (
+                      <p className="font-sans text-[10px] text-text-secondary line-clamp-1 font-medium bg-accent-secondary/5 px-1.5 py-0.5 rounded">
+                        <span className="font-bold text-text-primary">Minor: </span>{expandedOfficer.minor}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* BACK FACE */}
+            <div
+              className="card-back"
+              style={{
+                position: 'absolute',
+                width: '100%',
+                height: '100%',
+                backfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden',
+                transform: 'rotateY(180deg)',
+                top: 0,
+                left: 0,
+                overflow: 'hidden',
+              }}
+            >
+              <div className="w-full h-full p-5 md:p-6 flex flex-col justify-between bg-bg-elevated rounded-2xl border border-border-subtle shadow-2xl relative overflow-hidden">
+                {/* Close Button top-right */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleClose();
+                  }}
+                  className="absolute top-4 right-4 w-7 h-7 rounded-full bg-bg-primary border border-border-subtle flex items-center justify-center text-text-secondary hover:text-accent-primary hover:border-accent-primary cursor-pointer transition-all active:scale-95 z-10"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+
+                {/* Top row: Portrait photo and basic details */}
+                <div className="flex items-center gap-4 mt-1 row-top-profile shrink-0">
+                  {expandedOfficer.photoUrl ? (
+                    <div className="w-14 h-14 rounded-xl overflow-hidden border border-border-subtle shrink-0">
+                      <img
+                        src={expandedOfficer.photoUrl}
+                        alt={expandedOfficer.name}
+                        referrerPolicy="no-referrer"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-14 h-14 rounded-xl bg-bg-secondary flex items-center justify-center text-accent-primary font-display font-bold text-lg shrink-0 border border-border-subtle">
+                      {expandedOfficer.initials}
+                    </div>
+                  )}
+
+                  <div>
+                    <h3 className="font-display text-lg font-bold text-text-primary leading-tight">
+                      {expandedOfficer.name}
+                    </h3>
+                    <p className="font-sans text-[10px] font-bold uppercase tracking-wider text-accent-secondary mt-0.5">
+                      {expandedOfficer.role}
+                    </p>
+                    <div className="flex flex-col text-[10px] text-text-secondary mt-1 gap-1">
+                      <span><span className="font-semibold text-text-primary">Major:</span> {expandedOfficer.major}</span>
+                      {expandedOfficer.minor && (
+                        <span className="inline-flex items-center gap-1.5">
+                          <span className="font-semibold text-text-primary">Minor:</span> 
+                          <span className="text-accent-secondary bg-accent-secondary/10 px-1.5 py-0.5 rounded font-mono font-bold text-[9px] uppercase tracking-wide">
+                            {expandedOfficer.minor}
+                          </span>
+                        </span>
+                      )}
+                      <span><span className="font-semibold text-text-primary">Standing:</span> {expandedOfficer.year}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Biography paragraph with scrolling */}
+                <div className="my-3 text-left flex-grow overflow-y-auto max-h-[220px] pr-1 scrollbar-thin">
+                  <span className="font-sans text-[9px] font-bold text-text-muted uppercase tracking-widest block mb-1">
+                    Biography
+                  </span>
+                  <p className="font-sans text-[12.5px] leading-[1.6] text-text-secondary">
+                    {expandedOfficer.bio}
+                  </p>
+                </div>
+
+                {/* Social and OSU indicator row at bottom */}
+                <div className="flex items-center justify-between border-t border-border-subtle/40 pt-3 shrink-0">
+                  <div className="flex items-center gap-2">
+                    {expandedOfficer.socials.linkedin && (
+                      <a
+                        href={expandedOfficer.socials.linkedin}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="w-8 h-8 rounded-lg bg-bg-secondary hover:bg-accent-primary-dim hover:text-accent-primary flex items-center justify-center text-text-secondary transition-all"
+                      >
+                        <Linkedin className="w-3.5 h-3.5" />
+                      </a>
+                    )}
+                    {expandedOfficer.socials.github && (
+                      <a
+                        href={expandedOfficer.socials.github}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="w-8 h-8 rounded-lg bg-bg-secondary hover:bg-accent-primary-dim hover:text-accent-primary flex items-center justify-center text-text-secondary transition-all"
+                      >
+                        <Github className="w-3.5 h-3.5" />
+                      </a>
+                    )}
+                    {expandedOfficer.socials.twitter && (
+                      <a
+                        href={expandedOfficer.socials.twitter}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="w-8 h-8 rounded-lg bg-bg-secondary hover:bg-accent-primary-dim hover:text-accent-primary flex items-center justify-center text-text-secondary transition-all"
+                      >
+                        <Twitter className="w-3.5 h-3.5" />
+                      </a>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-1 text-[9px] font-mono text-accent-secondary bg-accent-secondary/10 px-2.5 py-1 rounded-full font-bold uppercase transition-colors">
+                    <span>OSU Lead</span>
+                    <span className="w-1 h-1 rounded-full bg-accent-secondary animate-pulse" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </>,
+      document.body
+    );
+  };
+
   return (
     <div id="about-page-root" className="pt-[72px] bg-bg-primary min-h-screen">
       
@@ -94,20 +338,6 @@ export const About: React.FC<AboutProps> = ({ onNavigate }) => {
 
       {/* 3. CURRENT OFFICERS SUB-SECTION */}
       <section id="officers-list-section" className="py-24 bg-bg-secondary border-t border-border-subtle relative">
-        {/* Backdrop for flipped card focus */}
-        <AnimatePresence>
-          {animState !== 'idle' && (
-            <motion.div
-              id="officer-flip-backdrop"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              onClick={handleClose}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[30] cursor-pointer"
-            />
-          )}
-        </AnimatePresence>
 
         <div className="max-w-7xl mx-auto px-6 md:px-16">
           <div id="officers-header" className="mb-14 text-center">
@@ -234,221 +464,7 @@ export const About: React.FC<AboutProps> = ({ onNavigate }) => {
             })}
           </div>
 
-          {/* Floating Centered Expanded Card */}
-          {expandedOfficer && initialRect && (
-            <div
-              className="card-container is-active"
-              id="officer-card-container-expanded"
-              style={{
-                position: 'fixed',
-                width: animState === 'active' ? 'max(300px, min(500px, 92vw))' : `${initialRect.width}px`,
-                height: animState === 'active' ? '450px' : `${initialRect.height}px`,
-                top: animState === 'active' ? '50%' : `${initialRect.top}px`,
-                left: animState === 'active' ? '50%' : `${initialRect.left}px`,
-                transform: animState === 'active' ? 'translate(-50%, -50%)' : 'translate(0, 0)',
-                transition: animState === 'starting' 
-                  ? 'none' 
-                  : 'width 600ms cubic-bezier(0.4, 0, 0.2, 1), height 600ms cubic-bezier(0.4, 0, 0.2, 1), top 600ms cubic-bezier(0.4, 0, 0.2, 1), left 600ms cubic-bezier(0.4, 0, 0.2, 1), transform 600ms cubic-bezier(0.4, 0, 0.2, 1)',
-                zIndex: 40,
-                perspective: '1000px',
-                cursor: 'default',
-              }}
-            >
-              <div
-                className="card-inner"
-                style={{
-                  position: 'relative',
-                  width: '100%',
-                  height: '100%',
-                  transition: 'transform 600ms cubic-bezier(0.4, 0, 0.2, 1)',
-                  transformStyle: 'preserve-3d',
-                  transform: animState === 'active' ? 'rotateY(180deg)' : 'rotateY(0deg)',
-                }}
-              >
-                {/* FRONT FACE */}
-                <div
-                  className="card-front"
-                  style={{
-                    position: 'absolute',
-                    width: '100%',
-                    height: '100%',
-                    backfaceVisibility: 'hidden',
-                    WebkitBackfaceVisibility: 'hidden',
-                    top: 0,
-                    left: 0,
-                    overflow: 'hidden',
-                  }}
-                >
-                  <div className="w-full h-full rounded-2xl bg-bg-elevated border border-border-subtle shadow-card flex flex-col justify-between overflow-hidden">
-                    {/* Image at Top */}
-                    <div className="w-full h-[280px] overflow-hidden relative border-b border-border-subtle/50 bg-bg-secondary flex items-center justify-center shrink-0">
-                      {expandedOfficer.photoUrl ? (
-                        <img
-                          src={expandedOfficer.photoUrl}
-                          alt={expandedOfficer.name}
-                          referrerPolicy="no-referrer"
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-bg-secondary text-accent-primary font-display font-black text-2xl">
-                          {expandedOfficer.initials}
-                        </div>
-                      )}
-                      {/* Academic Year Badge */}
-                      <div className="absolute top-2.5 right-2.5 px-2 py-0.5 bg-black/60 backdrop-blur-md rounded-full text-[8px] font-bold text-accent-secondary tracking-widest uppercase border border-border-subtle/10">
-                        {expandedOfficer.year}
-                      </div>
-                    </div>
-
-                    {/* Content immediately below */}
-                    <div className="p-3 text-left flex-grow flex flex-col justify-between">
-                      <div>
-                        <h3 className="font-sans text-[15px] font-bold text-text-primary leading-tight">
-                          {expandedOfficer.name}
-                        </h3>
-                        <p className="font-sans text-[10px] font-bold uppercase tracking-wider text-accent-secondary mt-0.5">
-                          {expandedOfficer.role}
-                        </p>
-                      </div>
-                      
-                      <div className="border-t border-border-subtle/30 pt-1.5 flex flex-col gap-0.5">
-                        <p className="font-sans text-[10px] text-text-secondary line-clamp-1">
-                          <span className="font-bold text-text-primary">Major: </span>{expandedOfficer.major}
-                        </p>
-                        {expandedOfficer.minor && (
-                          <p className="font-sans text-[10px] text-text-secondary line-clamp-1 font-medium bg-accent-secondary/5 px-1.5 py-0.5 rounded">
-                            <span className="font-bold text-text-primary">Minor: </span>{expandedOfficer.minor}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* BACK FACE */}
-                <div
-                  className="card-back"
-                  style={{
-                    position: 'absolute',
-                    width: '100%',
-                    height: '100%',
-                    backfaceVisibility: 'hidden',
-                    WebkitBackfaceVisibility: 'hidden',
-                    transform: 'rotateY(180deg)',
-                    top: 0,
-                    left: 0,
-                    overflow: 'hidden',
-                  }}
-                >
-                  <div className="w-full h-full p-5 md:p-6 flex flex-col justify-between bg-bg-elevated rounded-2xl border border-border-subtle shadow-2xl relative overflow-hidden">
-                    {/* Close Button top-right */}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleClose();
-                      }}
-                      className="absolute top-4 right-4 w-7 h-7 rounded-full bg-bg-primary border border-border-subtle flex items-center justify-center text-text-secondary hover:text-accent-primary hover:border-accent-primary cursor-pointer transition-all active:scale-95 z-10"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-
-                    {/* Top row: Portrait photo and basic details */}
-                    <div className="flex items-center gap-4 mt-1 row-top-profile shrink-0">
-                      {expandedOfficer.photoUrl ? (
-                        <div className="w-14 h-14 rounded-xl overflow-hidden border border-border-subtle shrink-0">
-                          <img
-                            src={expandedOfficer.photoUrl}
-                            alt={expandedOfficer.name}
-                            referrerPolicy="no-referrer"
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      ) : (
-                        <div className="w-14 h-14 rounded-xl bg-bg-secondary flex items-center justify-center text-accent-primary font-display font-bold text-lg shrink-0 border border-border-subtle">
-                          {expandedOfficer.initials}
-                        </div>
-                      )}
-
-                      <div>
-                        <h3 className="font-display text-lg font-bold text-text-primary leading-tight">
-                          {expandedOfficer.name}
-                        </h3>
-                        <p className="font-sans text-[10px] font-bold uppercase tracking-wider text-accent-secondary mt-0.5">
-                          {expandedOfficer.role}
-                        </p>
-                        <div className="flex flex-col text-[10px] text-text-secondary mt-1 gap-1">
-                          <span><span className="font-semibold text-text-primary">Major:</span> {expandedOfficer.major}</span>
-                          {expandedOfficer.minor && (
-                            <span className="inline-flex items-center gap-1.5">
-                              <span className="font-semibold text-text-primary">Minor:</span> 
-                              <span className="text-accent-secondary bg-accent-secondary/10 px-1.5 py-0.5 rounded font-mono font-bold text-[9px] uppercase tracking-wide">
-                                {expandedOfficer.minor}
-                              </span>
-                            </span>
-                          )}
-                          <span><span className="font-semibold text-text-primary">Standing:</span> {expandedOfficer.year}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Biography paragraph with scrolling */}
-                    <div className="my-3 text-left flex-grow overflow-y-auto max-h-[220px] pr-1 scrollbar-thin">
-                      <span className="font-sans text-[9px] font-bold text-text-muted uppercase tracking-widest block mb-1">
-                        Biography
-                      </span>
-                      <p className="font-sans text-[12.5px] leading-[1.6] text-text-secondary">
-                        {expandedOfficer.bio}
-                      </p>
-                    </div>
-
-                    {/* Social and OSU indicator row at bottom */}
-                    <div className="flex items-center justify-between border-t border-border-subtle/40 pt-3 shrink-0">
-                      <div className="flex items-center gap-2">
-                        {expandedOfficer.socials.linkedin && (
-                          <a
-                            href={expandedOfficer.socials.linkedin}
-                            target="_blank"
-                            rel="noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            className="w-8 h-8 rounded-lg bg-bg-secondary hover:bg-accent-primary-dim hover:text-accent-primary flex items-center justify-center text-text-secondary transition-all"
-                          >
-                            <Linkedin className="w-3.5 h-3.5" />
-                          </a>
-                        )}
-                        {expandedOfficer.socials.github && (
-                          <a
-                            href={expandedOfficer.socials.github}
-                            target="_blank"
-                            rel="noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            className="w-8 h-8 rounded-lg bg-bg-secondary hover:bg-accent-primary-dim hover:text-accent-primary flex items-center justify-center text-text-secondary transition-all"
-                          >
-                            <Github className="w-3.5 h-3.5" />
-                          </a>
-                        )}
-                        {expandedOfficer.socials.twitter && (
-                          <a
-                            href={expandedOfficer.socials.twitter}
-                            target="_blank"
-                            rel="noreferrer"
-                            onClick={(e) => e.stopPropagation()}
-                            className="w-8 h-8 rounded-lg bg-bg-secondary hover:bg-accent-primary-dim hover:text-accent-primary flex items-center justify-center text-text-secondary transition-all"
-                          >
-                            <Twitter className="w-3.5 h-3.5" />
-                          </a>
-                        )}
-                      </div>
-
-                      <div className="flex items-center gap-1 text-[9px] font-mono text-accent-secondary bg-accent-secondary/10 px-2.5 py-1 rounded-full font-bold uppercase transition-colors">
-                        <span>OSU Lead</span>
-                        <span className="w-1 h-1 rounded-full bg-accent-secondary animate-pulse" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+          {renderExpandedOfficer()}
 
         </div>
       </section>
