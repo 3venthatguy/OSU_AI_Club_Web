@@ -37,7 +37,7 @@ Ensure you have **Node.js** (v18 or higher) and **npm** installed on your machin
 
 1. Clone or download your repository:
    ```bash
-   git clone <YOUR_REP_URL>
+   git clone <https://github.com/3venthatguy/OSU_AI_Club_Web>
    cd ai-club-osu-web
    ```
 
