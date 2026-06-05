@@ -236,9 +236,9 @@ export const About: React.FC<AboutProps> = ({ onNavigate }) => {
                     <div className="flex flex-col text-[10px] text-text-secondary mt-1 gap-1">
                       <span><span className="font-semibold text-text-primary">Major:</span> {expandedOfficer.major}</span>
                       {expandedOfficer.minor && (
-                        <span className="inline-flex items-center gap-1.5">
-                          <span className="font-semibold text-text-primary">Minor:</span> 
-                          <span className="text-accent-secondary bg-accent-secondary/10 px-1.5 py-0.5 rounded font-mono font-bold text-[9px] uppercase tracking-wide">
+                        <span>
+                          <span className="font-semibold text-text-primary">Minor:</span>{' '}
+                          <span>
                             {expandedOfficer.minor}
                           </span>
                         </span>

@@ -8,9 +8,10 @@ import {
 
 interface FooterProps {
   onNavigate: (page: string) => void;
+  activePage?: string;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
+export const Footer: React.FC<FooterProps> = ({ onNavigate, activePage }) => {
   return (
     <footer
       id="footer-contact"
@@ -70,8 +71,11 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
                 key={link.id}
                 id={`footer-nav-link-${link.id}`}
                 onClick={() => {
-                  onNavigate(link.id);
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                  if (activePage === link.id) {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  } else {
+                    onNavigate(link.id);
+                  }
                 }}
                 className="text-text-secondary hover:text-accent-primary text-left transition-colors cursor-pointer"
               >

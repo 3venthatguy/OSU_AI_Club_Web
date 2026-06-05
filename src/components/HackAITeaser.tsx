@@ -60,7 +60,6 @@ export const HackAITeaser: React.FC<HackAITeaserProps> = ({ onNavigate }) => {
                 id="teaser-hack-cta-btn"
                 onClick={() => {
                   onNavigate('hackai');
-                  window.scrollTo({ top: 0, behavior: 'auto' });
                 }}
                 className="px-8 py-3.5 bg-accent-primary hover:bg-accent-primary-hover text-white text-[14px] font-bold rounded-full shadow-[0_4px_20px_rgba(59,91,255,0.3)] hover:shadow-[0_6px_28px_rgba(59,91,255,0.45)] transition-all duration-200 transform hover:-translate-y-0.5 flex items-center space-x-2 w-fit cursor-pointer"
               >

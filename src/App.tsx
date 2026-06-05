@@ -41,7 +41,7 @@ export default function App() {
         </main>
 
         {/* Unified professional bottom footer */}
-        <Footer onNavigate={setActivePage} />
+        <Footer activePage={activePage} onNavigate={setActivePage} />
       </SmoothScrollProvider>
     </div>
   );

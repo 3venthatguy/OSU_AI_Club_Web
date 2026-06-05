@@ -45,9 +45,10 @@ export const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate }) => {
     setMobileMenuOpen(false);
     if (id === 'contact') {
       document.getElementById('footer-contact')?.scrollIntoView({ behavior: 'smooth' });
+    } else if (id === activePage) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       onNavigate(id);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 

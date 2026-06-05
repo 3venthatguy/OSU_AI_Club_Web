@@ -188,7 +188,6 @@ export const WhatWeDo: React.FC<WhatWeDoProps> = ({ onNavigate }) => {
             id="panels-join-cta"
             onClick={() => {
               onNavigate('hackai');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             className="w-full py-3 px-5 bg-accent-primary hover:bg-accent-primary-hover text-white text-[14px] font-semibold rounded-full shadow-lg transition-all text-center cursor-pointer"
           >

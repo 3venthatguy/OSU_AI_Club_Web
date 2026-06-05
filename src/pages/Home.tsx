@@ -65,7 +65,7 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
             <div className="flex items-center space-x-2.5 mb-5 select-none">
               <span className="w-1.5 h-1.5 rounded-full bg-accent-secondary" />
               <span className="font-sans text-[12px] font-bold text-accent-secondary uppercase tracking-[0.18em]">
-                The Ohio State University
+                The Ohio State University Presents The
               </span>
             </div>
 
@@ -149,7 +149,7 @@ export const Home: React.FC<HomeProps> = ({ onNavigate }) => {
 
             {/* Subtext description */}
             <p className="font-sans text-[15px] md:text-[17px] text-text-secondary leading-relaxed max-w-md mb-8">
-              Building the next generation of AI researchers, engineers, and innovators — one project at a time.
+              Building the next generation of AI researchers, engineers, and innovators
             </p>
 
              {/* Two Pill buttons matching specified references */}

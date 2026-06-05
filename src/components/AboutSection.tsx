@@ -65,7 +65,6 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ onNavigate }) => {
             id="meet-team-action-link"
             onClick={() => {
               onNavigate('about');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             className="group inline-flex items-center space-x-1.5 font-sans text-[14px] font-bold text-accent-primary hover:text-accent-primary-hover transition-colors cursor-pointer mt-2"
           >
